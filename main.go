@@ -21,7 +21,7 @@ THE SOFTWARE.
 */
 package main
 
-import "mergegomods/cmd"
+import "github.com/popbones/mergegomods/cmd"
 
 func main() {
 	cmd.Execute()
