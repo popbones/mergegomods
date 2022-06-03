@@ -80,16 +80,14 @@ func (t *MergeTask) Run() error {
 	}
 
 	// copy
-	for name, _ := range t.InputGoModFiles {
+	for name := range t.InputGoModFiles {
 		inputModFile, err := loadGoModFile(name)
 		if err != nil {
 			return err
 		}
 
 		for _, r := range inputModFile.Require {
-			if err := modFile.AddRequire(r.Mod.Path, r.Mod.Version); err != nil {
-				return err
-			}
+			modFile.AddNewRequire(r.Mod.Path, r.Mod.Version, false)
 		}
 		for _, x := range inputModFile.Exclude {
 			if err := modFile.AddExclude(x.Mod.Path, x.Mod.Version); err != nil {
