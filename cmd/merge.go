@@ -79,6 +79,8 @@ func (t *MergeTask) Run() error {
 		}
 	}
 
+	requires := map[string]bool{}
+
 	// copy
 	for name := range t.InputGoModFiles {
 		inputModFile, err := loadGoModFile(name)
@@ -87,7 +89,13 @@ func (t *MergeTask) Run() error {
 		}
 
 		for _, r := range inputModFile.Require {
-			modFile.AddNewRequire(r.Mod.Path, r.Mod.Version, false)
+			// If the module is a different version of what's already in the target go.mod, add a new Require
+			// user should manually clean it up later
+			pathVer := r.Mod.Path + "@" + r.Mod.Version
+			if !requires[pathVer] {
+				modFile.AddNewRequire(r.Mod.Path, r.Mod.Version, false)
+				requires[pathVer] = true
+			}
 		}
 		for _, x := range inputModFile.Exclude {
 			if err := modFile.AddExclude(x.Mod.Path, x.Mod.Version); err != nil {
